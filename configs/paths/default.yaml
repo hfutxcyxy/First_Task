@@ -1,0 +1,60 @@
+version: "1.0"
+
+dataset_dir: "/data/ANCSH_yxy/dataset/dataset/eyeglasses_ancsh" # path to datasets folder
+result_dir: /data/ANCSH_yxy/result/ # path to result folder
+
+preprocess:
+  input_dir: "${paths.dataset_dir}"
+  output_dir: "${paths.result_dir}/preprocess"
+  tmp_dir: "${paths.preprocess.output_dir}/tmp"
+
+  stage1:
+    input: paths # overwrite based on dataset selection at runtime
+    tmp_output:
+      folder_name: "stage1"
+      input_files: "input_files.csv"
+      rest_state_data: "rest_state.json"
+      rest_state_mesh: "rest_state.ply"
+      pcd_camera: "pcd_camera_%03d_%03d.ply"
+      pcd_world: "pcd_world_%03d_%03d.ply"
+      pcd_rest_state: "pcd_rest_state_%03d_%03d.ply"
+    output:
+      pcd_data: "stage1_pcd.h5"
+
+  stage2:
+    input:
+      split_info: "path"
+      pcd_data: "${paths.preprocess.stage1.output.pcd_data}"
+    tmp_output:
+      folder_name: "stage2"
+      object_info: "object_info.json"
+    output:
+      split_info: "split_info.csv"
+      train_data: "train.h5"
+      val_data: "val.h5"
+      test_data: "test.h5"
+
+  output:
+    train: "${paths.preprocess.output_dir}/${paths.preprocess.stage2.output.train_data}"
+    val: "${paths.preprocess.output_dir}/${paths.preprocess.stage2.output.val_data}"
+    test: "${paths.preprocess.output_dir}/${paths.preprocess.stage2.output.test_data}"
+
+network:
+  output_dir: "${paths.result_dir}/network"
+  train:
+    output_dir: "${paths.network.output_dir}/train/${network.network_type}_${now:%Y-%m-%d}_${now:%H-%M-%S}"
+    model_filename: "model_%09d.pth"
+    best_model_filename: "best_model.pth"
+  test:
+    output_dir: "${paths.network.output_dir}/test/${network.network_type}_${now:%Y-%m-%d}_${now:%H-%M-%S}"
+    inference_result: "inference_result.h5"
+    visualization_folder: "visualization"
+    
+optimization:
+  output_dir: "${paths.result_dir}/optimization/combined_${now:%Y-%m-%d}_${now:%H-%M-%S}"
+  optimization_result_path: "optimization_result.h5"
+  visualization_folder: "visualization"
+
+evaluation:
+  output_dir: "${paths.result_dir}/evaluation/combined_${now:%Y-%m-%d}_${now:%H-%M-%S}"
+  prediction_filename: "prediction.h5"

@@ -1,0 +1,6 @@
+defaults:
+  - default
+  - _self_ # https://hydra.cc/docs/upgrades/1.0_to_1.1/default_composition_order
+
+dataset_dir: "/data/ANCSH_yxy/dataset/dataset/eyeglasses_ancsh"
+result_dir: "/data/ANCSH_yxy/result/ANCSH"

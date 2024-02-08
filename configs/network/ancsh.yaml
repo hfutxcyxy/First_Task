@@ -1,0 +1,6 @@
+defaults:
+  - default
+  - _self_ 
+
+network_type: "ANCSH"
+max_epochs: 1200
