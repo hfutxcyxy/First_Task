@@ -92,3 +92,5 @@ class PTV2(nn.Module):
         l4_points = self.decoder(l3_points,l1_points,skip_cluster)
         coord,feat = l4_points
         return self.fc_layer(feat)
+
+
